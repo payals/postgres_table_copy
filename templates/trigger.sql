@@ -1,17 +1,18 @@
-CREATE OR REPLACE FUNCTION $table_name()
+CREATE OR REPLACE FUNCTION $source()
   RETURNS trigger AS
-<BODY>
+$b
 BEGIN
         IF ( TG_OP = 'INSERT') THEN
-                INSERT INTO $table_name VALUES((NEW).*);
+                INSERT INTO $target VALUES((NEW).*);
                 RETURN NEW;
+        ELSIF ( TG_OP = 'UPDATE' ) THEN
+                DELETE FROM $target WHERE $pk = NEW.$pk;
+                INSERT INTO $target VALUES((NEW).*);
         ELSIF ( TG_OP = 'DELETE') THEN
-                DELETE FROM $table_name WHERE $pk = OLD.$pk;
+                DELETE FROM $target WHERE $pk = OLD.$pk;
                 RETURN OLD;
         END IF;          
 END;
-<BODY> LANGUAGE plpgsql;
+$b LANGUAGE plpgsql;
 
-CREATE TRIGGER $table_name BEFORE DELETE ON $table_name FOR EACH ROW EXECUTE PROCEDURE $table_name();
-
-$convert
+CREATE TRIGGER $tname BEFORE INSERT OR UPDATE OR DELETE ON $source FOR EACH ROW EXECUTE PROCEDURE $source();
