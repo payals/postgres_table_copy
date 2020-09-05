@@ -1,5 +1,4 @@
 CREATE TABLE IF NOT EXISTS $target (LIKE $source);
-#ALTER TABLE $target ALTER COLUMN item_extra_$pk TYPE bigint;
 
 $convert
 
